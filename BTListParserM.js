@@ -2,20 +2,20 @@ var events = new require("events");
 var util = require('util');
 var Parser = require('./ParserBT').Parser;
 
-var ListParserBT = function(lexer){
+var BTListParserM = function(lexer){
 	this.init(lexer);
 };
 
-util.inherits(ListParserBT, Parser);
+util.inherits(BTListParserM, Parser);
 
-var createListParserBT = function(lexer) {
-	return new ListParserBT(lexer);
+var createBTListParserM = function(lexer) {
+	return new BTListParserM(lexer);
 };
 
-exports.createListParser = createListParserBT;
+exports.createListParser = createBTListParserM;
 
 
-ListParserBT.prototype.assign = function () {
+BTListParserM.prototype.assign = function () {
 	this.list();
 
   this.match(this._input_._EQUALS_);
@@ -23,14 +23,14 @@ ListParserBT.prototype.assign = function () {
 	this.list();
 };
 
-ListParserBT.prototype.list = function () {
+BTListParserM.prototype.list = function () {
   console.log(this._lookahead_);
 	this.match(this._input_._LBRACK_);
 	this.elements();
 	this.match(this._input_._RBRACK_);
 };
 
-ListParserBT.prototype.elements = function () {
+BTListParserM.prototype.elements = function () {
 	
 	this.element();
 	while (this.LA(1) == this._input_._COMMA_) {
@@ -39,7 +39,7 @@ ListParserBT.prototype.elements = function () {
 	}
 };
 
-ListParserBT.prototype.element = function() {
+BTListParserM.prototype.element = function() {
 	if (this.LA(1) == this._input_._NAME_ && this.LA(2) == this._input_._EQUALS_) {
 		this.match(this._input_._NAME_);
 		this.match(this._input_._EQUALS_);
@@ -53,7 +53,7 @@ ListParserBT.prototype.element = function() {
 	}
 };
 
-ListParserBT.prototype.stat_alt1 = function(){
+BTListParserM.prototype.stat_alt1 = function(){
   var success = true;
   this.mark();
   try {
@@ -67,7 +67,7 @@ ListParserBT.prototype.stat_alt1 = function(){
   return success;
 };
 
-ListParserBT.prototype.stat_alt2 = function(){
+BTListParserM.prototype.stat_alt2 = function(){
   var success = true;
   this.mark();
   
@@ -82,7 +82,7 @@ ListParserBT.prototype.stat_alt2 = function(){
   return success;
 };
 
-ListParserBT.prototype.stat = function() {
+BTListParserM.prototype.stat = function() {
   if (this.stat_alt1()) {
     this.list();
     this.match(this._input_._EOF_TYPE_);
