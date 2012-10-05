@@ -3,54 +3,54 @@ var util = require('util');
 var Parser = require('./ParserBT').Parser;
 
 var ListParserBT = function(lexer){
-	this.init(lexer);
+    this.init(lexer);
 };
 
 util.inherits(ListParserBT, Parser);
 
 var createListParserBT = function(lexer) {
-	return new ListParserBT(lexer);
+    return new ListParserBT(lexer);
 };
 
 exports.createListParser = createListParserBT;
 
 
 ListParserBT.prototype.assign = function () {
-	this.list();
+    this.list();
 
   this.match(this._input_._EQUALS_);
 
-	this.list();
+    this.list();
 };
 
 ListParserBT.prototype.list = function () {
   console.log(this._lookahead_);
-	this.match(this._input_._LBRACK_);
-	this.elements();
-	this.match(this._input_._RBRACK_);
+    this.match(this._input_._LBRACK_);
+    this.elements();
+    this.match(this._input_._RBRACK_);
 };
 
 ListParserBT.prototype.elements = function () {
-	
-	this.element();
-	while (this.LA(1) == this._input_._COMMA_) {
-		this.match(this._input_._COMMA_);
-		this.element();
-	}
+    
+    this.element();
+    while (this.LA(1) == this._input_._COMMA_) {
+        this.match(this._input_._COMMA_);
+        this.element();
+    }
 };
 
 ListParserBT.prototype.element = function() {
-	if (this.LA(1) == this._input_._NAME_ && this.LA(2) == this._input_._EQUALS_) {
-		this.match(this._input_._NAME_);
-		this.match(this._input_._EQUALS_);
-		this.match(this._input_._NAME_);
-	} else if (this.LA(1) == this._input_._NAME_) {
-		this.match(this._input_._NAME_);
-	} else if( this.LA(1) == this._input_._LBRACK_) {
-		this.list();
-	} else {
-		throw new Error("expecting name of list; found " + this.LT(1));
-	}
+    if (this.LA(1) == this._input_._NAME_ && this.LA(2) == this._input_._EQUALS_) {
+        this.match(this._input_._NAME_);
+        this.match(this._input_._EQUALS_);
+        this.match(this._input_._NAME_);
+    } else if (this.LA(1) == this._input_._NAME_) {
+        this.match(this._input_._NAME_);
+    } else if( this.LA(1) == this._input_._LBRACK_) {
+        this.list();
+    } else {
+        throw new Error("expecting name of list; found " + this.LT(1));
+    }
 };
 
 ListParserBT.prototype.stat_alt1 = function(){

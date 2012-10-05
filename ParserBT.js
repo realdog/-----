@@ -2,17 +2,17 @@ var events = new require("events");
 var util = require('util');
 
 var ParserBT = function(){
-	
+    
 };
 
 util.inherits(ParserBT, events.EventEmitter);
 
 ParserBT.prototype.init = function(lexer) {
-	events.EventEmitter.call(this);
-	this._input_ = lexer;
-	this._lookahead_ = [];
+    events.EventEmitter.call(this);
+    this._input_ = lexer;
+    this._lookahead_ = [];
   this._markers_ = [];
-	this._p_ = 0;
+    this._p_ = 0;
  
 };
 
@@ -49,15 +49,15 @@ ParserBT.prototype.LT = function(i) {
 }
 
 ParserBT.prototype.LA = function(i) {
-	return this.LT(i).type;
+    return this.LT(i).type;
 };
 
 ParserBT.prototype.match = function (x) {
-	if (this.LA(1) == x) {
-		this.consume();
-	} else {
-		throw new Error("expecting " + this._input_.getTokenName(x) + "; found " + this.LT(1));
-	}
+    if (this.LA(1) == x) {
+        this.consume();
+    } else {
+        throw new Error("expecting " + this._input_.getTokenName(x) + "; found " + this.LT(1));
+    }
 };
 
 ParserBT.prototype.sync = function(i) {
@@ -71,6 +71,6 @@ ParserBT.prototype.sync = function(i) {
 }
 
 exports.createParser = function() {
-	return new ParserBT();
+    return new ParserBT();
 };
 exports.Parser = ParserBT;

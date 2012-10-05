@@ -2,19 +2,23 @@ var events = new require("events");
 var util = require('util');
 
 var BTParserM = function(){
-	
+    
 };
 
 util.inherits(BTParserM, events.EventEmitter);
 
 BTParserM.prototype.init = function(lexer) {
-	events.EventEmitter.call(this);
-	this._input_ = lexer;
-	this._lookahead_ = [];
+    events.EventEmitter.call(this);
+    this._input_ = lexer;
+    this._lookahead_ = [];
   this._markers_ = [];
-	this._p_ = 0;
+    this._p_ = 0;
   this._FAILED_ = -1;
  
+};
+
+BTParserM.prototype.alreadyParseRule = function(memoization) {
+  
 };
 
 BTParserM.prototype.consume = function() {
@@ -50,15 +54,15 @@ BTParserM.prototype.LT = function(i) {
 }
 
 BTParserM.prototype.LA = function(i) {
-	return this.LT(i).type;
+    return this.LT(i).type;
 };
 
 BTParserM.prototype.match = function (x) {
-	if (this.LA(1) == x) {
-		this.consume();
-	} else {
-		throw new Error("expecting " + this._input_.getTokenName(x) + "; found " + this.LT(1));
-	}
+    if (this.LA(1) == x) {
+        this.consume();
+    } else {
+        throw new Error("expecting " + this._input_.getTokenName(x) + "; found " + this.LT(1));
+    }
 };
 
 BTParserM.prototype.sync = function(i) {
@@ -72,6 +76,6 @@ BTParserM.prototype.sync = function(i) {
 }
 
 exports.createParser = function() {
-	return new BTParserM();
+    return new BTParserM();
 };
 exports.Parser = BTParserM;

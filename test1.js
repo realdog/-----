@@ -26,8 +26,8 @@ parser.list();
 var b = createListLexer("[a,b 测试] ");
 var t = b.nextToken();
 while (t.type != b._EOF_TYPE_) {
-	console.log(t);
-	t = b.nextToken();
+    console.log(t);
+    t = b.nextToken();
 }
 console.log(t);
 
