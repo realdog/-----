@@ -18,7 +18,7 @@ exports.createListParser = createBTListParserM;
 BTListParserM.prototype.assign = function () {
     this.list();
 
-  this.match(this._input_._EQUALS_);
+    this.match(this._input_._EQUALS_);
 
     this.list();
 };
