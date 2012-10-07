@@ -1,12 +1,18 @@
 var createListLexer =  require('./ListLexer').createListLexer;
 var util = require('util');
 var Token = require('./Token').Token;
-var createListParser = require('./ListParserBT').createListParser;
+var createListParser = require('./BTListParserM').createListParser;
+var lexer = createListLexer("[a,b] = [c,d]");
+var parser = createListParser(lexer);
+parser.stat();
 
+/*
 //backtrace
 var lexer = createListLexer("[a,b] = [c,d]");
 var parser = createListParser(lexer);
 parser.stat();
+*/
+
 
 /*
 // lookahead k

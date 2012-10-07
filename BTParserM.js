@@ -24,7 +24,6 @@ BTParserM.prototype.init = function(lexer) {
     this._p_ = 0;
     this._FAILED_ = -1;
     this._list_memo_ = {};
- 
 };
 
 /** 检测是否当前词法单元已经在推演状态下被解析过
@@ -32,8 +31,9 @@ BTParserM.prototype.init = function(lexer) {
  */
 
 BTParserM.prototype.alreadyParseRule = function(memoization) {
+    console.log("BTParserM.prototype.alreadyParseRule 检测是否当前词法单元已经在推演状态下被解析过:");
     // 当前位置的词法单元如果不在在_list_memo_
-    if (!!memoization[this.index()]) {
+    if (!memoization[this.index()]) {
         return false;
     }
     var memo = memoization[this.index()];
@@ -54,6 +54,7 @@ BTParserM.prototype.alreadyParseRule = function(memoization) {
  */
 
 BTParserM.prototype.memoize = function(memoization, startTokenIndex, failed) {
+    console.log("BTParserM.prototype.memoize 用于记录中间结果:memoization-" + util.inspect(memoization) + ' startTokenIndex-' + startTokenIndex + ' failed-'  + failed);
     /*如果解析失败，起始位置对应内容为-1否则为结束位置@@ 代表了成功*/
     var stopTokenIndex = failed ? this._FAILED_ : this.index();
     memoization[startTokenIndex] = stopTokenIndex;
@@ -62,32 +63,37 @@ BTParserM.prototype.memoize = function(memoization, startTokenIndex, failed) {
 /** 返回当前_lookahead_缓冲区指针
  */
 BTParserM.prototype.index = function() {
+    console.log("BTParserM.prototype.index 返回当前_lookahead_缓冲区指针:" + this._p_);
     return this._p_;
 };
 
 
-/** 在向前看缓冲区中移动指针用，目前一般是被match调用
+/** 在向前看缓冲区中移动指针、添加数据用，目前一般是被match调用
 */
 
 BTParserM.prototype.consume = function() {
     // 向前看指针向前移动
+    console.log("BTParserM.prototype.consume -_lookahead_.length:" + this._lookahead_.length + ' p:' + this._p_ + ' _markers_.length:' + this._markers_.length);
     this._p_++;
-    // 如果当前指针已经超过向前看缓冲区长度 并且推演标记/记录缓冲区内容不为空,清空向前看缓冲区以及记忆缓冲区
+    // 如果当前指针已经超过向前看缓冲区长度 并且推演标记/记录缓冲区内容为空,清空向前看缓冲区以及记忆缓冲区
     // 向前看缓冲区清零
     if (this._p_ == this._lookahead_.length && (!this.isSpeculating())) {
         this._p_ = 0;
-        var _temp_ = this._lookahead_.slice(0, this._lookahead_.length);
-        this._memoization_ = {};
+        var _temp_ = this._lookahead_.splice(0, this._lookahead_.length);
+        this._list_memo_ = {};
     }
-    
+    if (this._p_ > 0 && this._lookahead_[this._p_ -1].type != this._input_._EOF_TYPE_) {
+        this.sync(1);
+    }
     // 向前看缓冲区内容放入一个词法单元
-    this.sync(1);
+    
 };
 
 /**  当前指针放入推演标记缓冲区
 */
 
 BTParserM.prototype.mark = function() {
+    console.log("BTParserM.prototype.mark 当前指针放入推演标记缓冲区:" + this._p_);
   this._markers_.push(this._p_);
   return this._p_;
 };
@@ -96,14 +102,16 @@ BTParserM.prototype.mark = function() {
 */
 
 BTParserM.prototype.release = function() {
-  var marker = this._markers_.pop();
-  this.seek(marker);
+    console.log("BTParserM.prototype.release-从推演标记缓冲区内弹出位置指针并同步给_p_");
+    var marker = this._markers_.pop();
+    this.seek(marker);
 };
 
 /** 修改_p_
 */
 
 BTParserM.prototype.seek = function(index) {
+    console.log("BTParserM.prototype.seek 修改_p_:" + index+ ' p:' + this._p_);
   this._p_ = index;
 };
 
@@ -118,6 +126,7 @@ BTParserM.prototype.isSpeculating = function() {
 */
 
 BTParserM.prototype.LT = function(i) {
+    console.log("BTParserM.prototype.LT:" + i+ ' p:' + this._p_);
   this.sync(i);
   return this._lookahead_[this._p_ + i - 1];
 }
@@ -126,6 +135,7 @@ BTParserM.prototype.LT = function(i) {
 */
 
 BTParserM.prototype.LA = function(i) {
+    console.log("BTParserM.prototype.LA:" + i+ ' p:' + this._p_);
     return this.LT(i).type;
 };
 
@@ -134,19 +144,21 @@ BTParserM.prototype.LA = function(i) {
  */
 
 BTParserM.prototype.match = function (x) {
+    console.log("BTParserM.prototype.match:" + x);
     // 如果指定位置词法单元类型是x则 向前移动_p_ 同时向前看缓冲区增加一个词法单元,否则抛出异常
     if (this.LA(1) == x) {
         this.consume();
     } else {
-        throw new Error("expecting " + this._input_.getTokenName(x) + "; found " + this.LT(1));
+        throw new Error("MATCH-应当是 " + this._input_.getTokenName(x) + "; 发现是 " + this.LT(1));
     }
 };
 
-/** 向前看词法缓冲区增加x个词法单元
+/** 测试并查看,向前看词法缓冲区增加x个词法单元
  *  i 增加词法单元的个数
 */
 
 BTParserM.prototype.sync = function(i) {
+    console.log("BTParserM.prototype.match:" + i + ' p:' + this._p_);
   // 如果要要增加的词法单元个数加上当前指针位置超过了向前看缓冲区长度则扩展缓冲区并添加内容否则不变
   if ((this._p_ + i -1) > (this._lookahead_.length - 1)) {
     // 计算要增加多少个空白位置
